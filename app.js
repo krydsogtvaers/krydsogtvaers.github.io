@@ -161,6 +161,7 @@
     $("saet").value = saet.id;
     location.hash = `saet=${saet.id}&seed=${seed}`;
     $("printSub").textContent = $("facitSub").textContent = `${saet.navn} · ${kryds ? kryds.ord.length : 0} ord · kryds nr. ${seed}`;
+    $("hjaelpSub").textContent = `${saet.navn} · ${kryds ? kryds.ord.length : 0} ord · kryds nr. ${seed} · med hjælpebogstaver`;
     $("footSeed").textContent = `kryds nr. ${seed} – del linket, så får andre den samme kryds`;
     $("doneOverlay").hidden = true;
     $("feedback").textContent = ""; $("feedback").className = "feedback";
@@ -188,23 +189,23 @@
   }
 
   function tegnAlt() {
-    const grid = $("grid"), facit = $("facitGrid");
-    grid.innerHTML = ""; facit.innerHTML = "";
+    const grid = $("grid"), facit = $("facitGrid"), hj = $("hjaelpGrid");
+    grid.innerHTML = ""; facit.innerHTML = ""; hj.innerHTML = "";
     if (!kryds) { grid.innerHTML = "<p>Der er ikke nok ord i dette sæt til at lave en kryds.</p>"; return; }
-    grid.style.gridTemplateColumns = facit.style.gridTemplateColumns = `repeat(${kryds.b}, minmax(0,1fr))`;
+    grid.style.gridTemplateColumns = facit.style.gridTemplateColumns = hj.style.gridTemplateColumns = `repeat(${kryds.b}, minmax(0,1fr))`;
     const m = celleStatus();
     for (let r0 = 0; r0 < kryds.h; r0++) for (let c0 = 0; c0 < kryds.b; c0++) {
       const k = r0 + "," + c0, c = m[k];
-      const el = document.createElement("div"), fe = document.createElement("div");
-      el.className = fe.className = "cell " + (c ? "letter" : "empty");
+      const el = document.createElement("div"), fe = document.createElement("div"), he = document.createElement("div");
+      el.className = fe.className = he.className = "cell " + (c ? "letter" : "empty");
       if (c) {
         el.dataset.k = k;
-        if (kryds.hjaelp.has(k)) { el.classList.add("hjaelp"); el.dataset.h = c.bogstav; }
-        if (c.num) { el.innerHTML = `<span class="num">${c.num}</span>`; fe.innerHTML = `<span class="num">${c.num}</span>`; }
+        if (kryds.hjaelp.has(k)) { he.classList.add("hjaelp"); he.dataset.h = c.bogstav; }
+        if (c.num) { el.innerHTML = fe.innerHTML = he.innerHTML = `<span class="num">${c.num}</span>`; }
         el.addEventListener("click", () => klikCelle(r0, c0));
         fe.append(c.bogstav);
       }
-      grid.appendChild(el); facit.appendChild(fe);
+      grid.appendChild(el); facit.appendChild(fe); hj.appendChild(he);
     }
     tegnLister();
     opdater();
@@ -244,6 +245,7 @@
       b.addEventListener("click", () => vaelg(o));
       (o.dir === "A" ? la : ld).appendChild(b);
     });
+    $("hjaelpClues").innerHTML = `<div><div class="dirhead">Vandret</div>${la.innerHTML}</div><div><div class="dirhead">Lodret</div>${ld.innerHTML}</div>`;
   }
   const escape = s => s.replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 
@@ -350,10 +352,7 @@
     $("btnNy").addEventListener("click", () => start(saet.id, nySeed()));
     $("btnDoneNy").addEventListener("click", () => start(saet.id, nySeed()));
     $("btnDoneLuk").addEventListener("click", () => $("doneOverlay").hidden = true);
-    $("btnPrint").addEventListener("click", () => {
-      document.body.classList.toggle("print-hjaelp", $("printMode").value === "hjaelp");
-      window.print();
-    });
+    $("btnPrint").addEventListener("click", () => window.print());
     $("svarForm").addEventListener("submit", e => { e.preventDefault(); tjek(); });
     $("btnHint").addEventListener("click", hint);
 

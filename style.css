@@ -15,7 +15,6 @@ button,input,select{font-family:inherit}
 .setselect{min-height:44px;padding:0 36px 0 14px;border:1px solid #3A4A60;border-radius:8px;background:#283850 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center;color:#fff;font-size:15px;font-weight:500;appearance:none;-webkit-appearance:none;max-width:100%;cursor:pointer}
 .setselect optgroup,.setselect option{color:var(--ink);background:#fff}
 .spacer{flex:1 1 20px}
-.printmode{font-weight:500;font-size:14px}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent}
 .btn:disabled{opacity:.45;cursor:default}
@@ -90,7 +89,7 @@ button,input,select{font-family:inherit}
 @media (max-width:480px){.clues2{grid-template-columns:1fr}}
 
 .foot{padding:12px 24px;font-size:12px;color:var(--faint);border-top:1px solid var(--line)}
-.printhead,.facit{display:none}
+.printhead,.facit,.hjaelpside{display:none}
 
 .overlay{position:fixed;inset:0;background:rgba(30,42,58,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
 .overlay[hidden]{display:none}
@@ -115,7 +114,10 @@ button,input,select{font-family:inherit}
   .cell.empty{background:transparent !important}
   .cell.letter,.cell.solved,.cell.active{background:#fff !important;border:1px solid #000 !important;margin:-.5px;box-shadow:none}
   .cell .num{color:#000;font-size:7pt}
-  body.print-hjaelp .cell.hjaelp::after{content:attr(data-h);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#000;font-weight:700}
+  .hjaelpside{display:block;page-break-before:always}
+  .hjaelpside .printhead{margin-bottom:14px}
+  .hjaelpside .cell.hjaelp::after{content:attr(data-h);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#000;font-weight:700}
+  .hjaelpside .clues2{margin-top:14px;font-size:10pt}
   .panel{display:block;margin-top:14px}
   .card{border:0;padding:0;box-shadow:none;gap:8px}
   .cardlabel{display:none}
