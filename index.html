@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KFL Kryds og tværs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">KFL Kryds og tværs</div>
+    <label class="setlabel" for="saet">Opgavesæt</label>
+    <select id="saet" class="setselect" aria-label="Vælg opgavesæt"></select>
+    <div class="spacer"></div>
+    <div class="actions">
+      <button type="button" id="btnNy" class="btn btn-ghost">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 0 1 10.3-4.2M14 8a6 6 0 0 1-10.3 4.2"/><path d="M12 1v3H9M4 15v-3h3"/></svg>
+        Ny tilfældig kryds
+      </button>
+      <button type="button" id="btnPrint" class="btn btn-ghost">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6V2h8v4M4 12H2V7h12v5h-2"/><path d="M4 10h8v4H4z"/></svg>
+        Print papirudgave
+      </button>
+    </div>
+  </header>
+
+  <div class="printhead">
+    <div>
+      <div class="printtitle">KFL Kryds og tværs</div>
+      <div class="printsub" id="printSub"></div>
+    </div>
+    <div class="printlines">
+      <div>Navn: ____________________________</div>
+      <div>Klasse: __________ &nbsp; Dato: __________</div>
+    </div>
+  </div>
+
+  <main class="main">
+    <section class="board" aria-label="Krydsen">
+      <div class="status">
+        <div class="progress"><span id="progText">0 af 0 ord</span><div class="bar"><div id="progBar"></div></div></div>
+        <div>Tid <strong id="timer">00:00</strong></div>
+        <div>Hints brugt <strong id="hintCount">0</strong></div>
+        <div class="hinttext">Klik på et ord i gitteret for at se ledetråden</div>
+      </div>
+      <div id="grid" class="grid" role="group" aria-label="Krydsordsgitter"></div>
+      <div class="legend">
+        <span><i class="sw solved"></i>Løst</span>
+        <span><i class="sw active"></i>Valgt ord</span>
+        <span><i class="sw"></i>Tomt</span>
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="Ledetråd og svar">
+      <div class="card" id="clueCard">
+        <div class="cardhead">
+          <div class="cluetag" id="clueTag">Vælg et ord</div>
+          <div class="cluesrc" id="clueSrc"></div>
+        </div>
+        <p class="cluetext" id="clueText">Klik på et felt i gitteret, eller vælg en ledetråd i listen nedenfor.</p>
+        <div class="boxes" id="boxes" aria-hidden="true"></div>
+        <label class="inlabel" for="svar">Dit svar (ét ord, uden mellemrum)</label>
+        <form id="svarForm" class="svarrow" autocomplete="off">
+          <input id="svar" type="text" placeholder="Skriv begrebet" autocapitalize="characters" disabled>
+          <div class="btnrow">
+            <button type="submit" id="btnTjek" class="btn btn-primary" disabled>Tjek svar</button>
+            <button type="button" id="btnHint" class="btn btn-outline" disabled>Giv et bogstav (−1 point)</button>
+          </div>
+        </form>
+        <div class="feedback" id="feedback" aria-live="polite"></div>
+      </div>
+
+      <div class="card cluelist">
+        <div class="cardlabel">Alle ledetråde</div>
+        <div class="clues2">
+          <div><div class="dirhead">Vandret</div><div id="listA" class="clueitems"></div></div>
+          <div><div class="dirhead">Lodret</div><div id="listD" class="clueitems"></div></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <section class="facit" aria-label="Facit">
+    <div class="printtitle">Facit</div>
+    <div class="printsub" id="facitSub"></div>
+    <div id="facitGrid" class="grid facitgrid"></div>
+  </section>
+
+  <footer class="foot">KFL Kryds og tværs · begreber fra kapitel 1–18 · <span id="footSeed"></span></footer>
+</div>
+
+<div class="overlay" id="doneOverlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+    <div class="donecheck" aria-hidden="true">✓</div>
+    <h2 id="doneTitle">Flot – krydsen er løst!</h2>
+    <p id="doneText"></p>
+    <div class="btnrow">
+      <button type="button" id="btnDoneNy" class="btn btn-primary">Ny tilfældig kryds</button>
+      <button type="button" id="btnDoneLuk" class="btn btn-outline">Se krydsen</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
