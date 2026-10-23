@@ -53,6 +53,7 @@
       // start med et langt ord
       pool.sort((a, b) => (b.ord.length >= 7) - (a.ord.length >= 7) || 0);
       const N = 21, g = Array.from({ length: N }, () => Array(N).fill(null));
+      const dirs = Array.from({ length: N }, () => Array.from({ length: N }, () => new Set()));
       const placeret = [];
       let bb = null; // [rmin, rmax, cmin, cmax]
       const bbMed = (w, r0, c0, d) => {
@@ -71,7 +72,12 @@
         let kryds = 0;
         for (let i = 0; i < w.length; i++) {
           const rr = r0 + dr * i, cc = c0 + dc * i, cell = g[rr][cc];
-          if (cell) { if (cell !== w[i]) return false; kryds++; }
+          if (cell) {
+            if (cell !== w[i]) return false;
+            // et fyldt felt må kun komme fra et ord på tværs – aldrig et ord i samme retning
+            if (dirs[rr][cc].has(d)) return false;
+            kryds++;
+          }
           else {
             const s1r = rr + dc, s1c = cc + dr, s2r = rr - dc, s2c = cc - dr;
             if (s1r < N && s1c < N && g[s1r][s1c]) return false;
@@ -82,7 +88,7 @@
       };
       const put = (o, r0, c0, d) => {
         const dr = d === "D" ? 1 : 0, dc = d === "A" ? 1 : 0;
-        for (let i = 0; i < o.ord.length; i++) g[r0 + dr * i][c0 + dc * i] = o.ord[i];
+        for (let i = 0; i < o.ord.length; i++) { g[r0 + dr * i][c0 + dc * i] = o.ord[i]; dirs[r0 + dr * i][c0 + dc * i].add(d); }
         bb = bbMed(o.ord, r0, c0, d);
         placeret.push({ ...o, r: r0, c: c0, dir: d });
       };
