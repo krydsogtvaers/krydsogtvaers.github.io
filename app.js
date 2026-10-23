@@ -20,7 +20,9 @@
   const MAX_ORD = 12, MIN_ORD = 8, MAX_GRID = 15;
 
   function saetListe() {
-    const liste = SAMLINGER.map(s => ({ id: s.id, navn: s.navn, kap: s.kap, gruppe: "Samlinger" }));
+    const alleKap = [...new Set(ORDBANK.map(o => o.kap))];
+    const liste = [{ id: "alle", navn: "Alle kapitler · blandet", kap: alleKap, gruppe: "Samlinger" }];
+    liste.push(...SAMLINGER.map(s => ({ id: s.id, navn: s.navn, kap: s.kap, gruppe: "Samlinger" })));
     ENKELTE.forEach(k => {
       if (Array.isArray(k)) liste.push({ id: "k" + k.join("-"), navn: `Kapitel ${k[0]}–${k[k.length - 1]} · ${KAPITELNAVNE[15]}`, kap: k, gruppe: "Enkelte kapitler" });
       else liste.push({ id: "k" + k, navn: `Kapitel ${k} · ${KAPITELNAVNE[k] || ""}`, kap: [k], gruppe: "Enkelte kapitler" });
@@ -127,6 +129,13 @@
       .forEach(([r0, c0]) => { n++; starter[r0 + "," + c0].forEach(o => o.num = n); });
     bedst.ord.sort((a, b) => a.num - b.num);
     bedst.ord.forEach(o => { o.loest = false; o.afsloeret = new Set(); });
+    // hjælpebogstaver til print: ét bogstav pr. ord (aldrig det første), bestemt af seed
+    const hr = rng(seed + 7919);
+    bedst.hjaelp = new Set();
+    bedst.ord.forEach(o => {
+      const i = 1 + Math.floor(hr() * (o.ord.length - 1));
+      bedst.hjaelp.add((o.r + (o.dir === "D" ? i : 0)) + "," + (o.c + (o.dir === "A" ? i : 0)));
+    });
     return bedst;
   }
 
@@ -184,6 +193,7 @@
       el.className = fe.className = "cell " + (c ? "letter" : "empty");
       if (c) {
         el.dataset.k = k;
+        if (kryds.hjaelp.has(k)) { el.classList.add("hjaelp"); el.dataset.h = c.bogstav; }
         if (c.num) { el.innerHTML = `<span class="num">${c.num}</span>`; fe.innerHTML = `<span class="num">${c.num}</span>`; }
         el.addEventListener("click", () => klikCelle(r0, c0));
         fe.append(c.bogstav);
@@ -334,7 +344,10 @@
     $("btnNy").addEventListener("click", () => start(saet.id, nySeed()));
     $("btnDoneNy").addEventListener("click", () => start(saet.id, nySeed()));
     $("btnDoneLuk").addEventListener("click", () => $("doneOverlay").hidden = true);
-    $("btnPrint").addEventListener("click", () => window.print());
+    $("btnPrint").addEventListener("click", () => {
+      document.body.classList.toggle("print-hjaelp", $("printMode").value === "hjaelp");
+      window.print();
+    });
     $("svarForm").addEventListener("submit", e => { e.preventDefault(); tjek(); });
     $("btnHint").addEventListener("click", hint);
 

@@ -29,3 +29,16 @@ Interaktiv kryds og tværs med fagbegreber fra KFL, kapitel 1–18. Ren statisk 
 - Hvert sæt trækker op til 12 tilfældige ord fra banken og bygger en kryds (max 15×15).
 - Adressen indeholder sættet og et kryds-nummer, fx `#saet=k2&seed=592`. Del linket, så får alle elever den samme kryds.
 - "Print papirudgave" printer krydsen med ledetråde på side 1 og facit på side 2.
+
+## Printversioner
+- Knappen "Print papirudgave" har en valgmulighed ved siden af: **blank** eller **med hjælpebogstaver** (ét bogstav pr. ord, aldrig det første – bestemt af kryds-nummeret, så samme kryds altid får samme hjælp).
+
+## Færdige printsæt
+`tools/lav_printsaet.js` laver printsæt med krydser fra alle kapitler, og `tools/til_pdf.py` konverterer dem til PDF:
+
+```
+node tools/lav_printsaet.js 20 32     # 20 sæt à 32 krydser → print/saet-NN.html
+python3 tools/til_pdf.py              # → print/saet-NN.pdf
+```
+
+Hver PDF: forside, 32 blanke krydser, de samme 32 med hjælpebogstaver, 32 facitsider. `print/oversigt.csv` viser, hvilke ord der er i hver kryds, og koden til at åbne den samme kryds på hjemmesiden (fx `#saet=alle&seed=103007` = Sæt 03, Kryds 07).
