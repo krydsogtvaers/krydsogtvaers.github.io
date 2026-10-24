@@ -2,6 +2,7 @@
 (function () {
   "use strict";
   const B = window.BINGO, $ = id => document.getElementById(id);
+  const BANK = ORDBANK.filter(o => (o.fag || "KFL") === "KFL"); // bingo bruger indtil videre kun KFL (80 begreber pr. sæt)
   let saet = 1, pool = [], vaert = null, tie = null;
 
   // ---------- lokal lagring (må godt fejle) ----------
@@ -22,11 +23,11 @@
     $("tabElev").setAttribute("aria-selected", elev); $("tabVaert").setAttribute("aria-selected", !elev);
     if (elev) { skrivHash("elev", { kort: kortNr() }); } else { skrivHash("vaert"); }
   }
-  function velkommen(i) { const o = ORDBANK[i]; return B.visning(o); }
+  function velkommen(i) { const o = BANK[i]; return B.visning(o); }
   function celleKlasse(tekst) { return tekst.length > 13 ? "bcell s3" : tekst.length > 10 ? "bcell s2" : "bcell"; }
 
   function skiftSaet(n) {
-    saet = n; pool = B.pool(ORDBANK, saet);
+    saet = n; pool = B.pool(BANK, saet);
     $("saet").value = saet;
     initVaert(); tegnElev();
   }
@@ -73,7 +74,7 @@
     const n = vaert.order.length, p = vaert.pos;
     $("count").textContent = `Kald ${p} af ${n}`;
     document.querySelectorAll("input[name=mode]").forEach(r => r.checked = r.value === vaert.mode);
-    const cur = p > 0 ? ORDBANK[vaert.order[p - 1]] : null;
+    const cur = p > 0 ? BANK[vaert.order[p - 1]] : null;
     $("bigLabel").textContent = cur ? `Ledetråd ${p}` : (p === 0 ? "Klar" : "");
     $("bigClue").textContent = cur ? B.ledetraad(cur) : "Tryk Næste ledetråd for at starte. Læs ledetråden højt – eleverne finder begrebet på deres kort.";
     const a = $("answer"); a.hidden = !(cur && visSvar); if (cur) a.textContent = B.visning(cur);
@@ -81,7 +82,7 @@
     $("btnReveal").firstChild.textContent = visSvar ? "Skjul svar " : "Vis svar ";
     const list = $("calledList"); list.innerHTML = "";
     vaert.order.slice(0, p).forEach((i, k) => {
-      const c = document.createElement("span"); c.className = "chip" + (k === p - 1 ? " now" : ""); c.textContent = B.visning(ORDBANK[i]); list.appendChild(c);
+      const c = document.createElement("span"); c.className = "chip" + (k === p - 1 ? " now" : ""); c.textContent = B.visning(BANK[i]); list.appendChild(c);
     });
     gem();
   }
@@ -102,7 +103,7 @@
     const win = new Set(fuld ? idx.map((_, p) => p) : st.linjer.flat());
     let tekst = ok ? (fuld ? "BINGO – fuld plade ✓" : "BINGO – hel linje ✓") : "Ikke bingo endnu";
     let sub = ok ? "" : (fuld ? `${st.antal} af 16 kaldt – mangler ${16 - st.antal}.` : `Nærmeste linje mangler ${st.manglerLinje} begreb${st.manglerLinje === 1 ? "" : "er"}. ${st.antal} af 16 er kaldt.`);
-    const mini = idx.map((i, p) => `<div class="${k.has(i) ? "k" : ""}${ok && win.has(p) ? " w" : ""}">${esc(B.visning(ORDBANK[i]))}</div>`).join("");
+    const mini = idx.map((i, p) => `<div class="${k.has(i) ? "k" : ""}${ok && win.has(p) ? " w" : ""}">${esc(B.visning(BANK[i]))}</div>`).join("");
     out.innerHTML = `<div class="verdict ${ok ? "yes" : "no"}">Kort ${nr}: ${tekst}</div><div>${sub}</div><div class="mini">${mini}</div>`;
   }
   const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -111,7 +112,7 @@
     const k = kaldte(), rest = pool.filter(i => !k.has(i) && (!tie || i !== tie.i));
     if (!rest.length) return;
     tie = { i: rest[Math.floor(Math.random() * rest.length)], vist: false };
-    const o = ORDBANK[tie.i], box = $("tieBox"); box.hidden = false;
+    const o = BANK[tie.i], box = $("tieBox"); box.hidden = false;
     box.innerHTML = `<div>${esc(B.ledetraad(o))}</div><button type="button" class="btn btn-outline" id="btnTieSvar">Vis svar</button> <span id="tieSvar"></span>`;
     $("btnTieSvar").addEventListener("click", () => { $("tieSvar").innerHTML = `<b>${esc(B.visning(o))}</b>`; });
   }

@@ -20,17 +20,28 @@
   const MAX_ORD = 12, MIN_ORD = 8, MAX_GRID = 15;
 
   function saetListe() {
-    const alleKap = [...new Set(ORDBANK.map(o => o.kap))];
-    const liste = [{ id: "alle", navn: "Alle kapitler · blandet", kap: alleKap, gruppe: "Samlinger" }];
-    liste.push(...SAMLINGER.map(s => ({ id: s.id, navn: s.navn, kap: s.kap, gruppe: "Samlinger" })));
+    const kfl = ORDBANK.filter(o => (o.fag || "KFL") === "KFL");
+    const alleKap = [...new Set(kfl.map(o => o.kap))];
+    const liste = [{ id: "alle", fag: "KFL", navn: "Alle kapitler · blandet", kap: alleKap, gruppe: "KFL · Samlinger" }];
+    liste.push(...SAMLINGER.map(s => ({ id: s.id, fag: "KFL", navn: s.navn, kap: s.kap, gruppe: "KFL · Samlinger" })));
     ENKELTE.forEach(k => {
-      if (Array.isArray(k)) liste.push({ id: "k" + k.join("-"), navn: `Kapitel ${k[0]}–${k[k.length - 1]} · ${KAPITELNAVNE[15]}`, kap: k, gruppe: "Enkelte kapitler" });
-      else liste.push({ id: "k" + k, navn: `Kapitel ${k} · ${KAPITELNAVNE[k] || ""}`, kap: [k], gruppe: "Enkelte kapitler" });
+      if (Array.isArray(k)) liste.push({ id: "k" + k.join("-"), fag: "KFL", navn: `Kapitel ${k[0]}–${k[k.length - 1]} · ${KAPITELNAVNE[15]}`, kap: k, gruppe: "KFL · Enkelte kapitler" });
+      else liste.push({ id: "k" + k, fag: "KFL", navn: `Kapitel ${k} · ${KAPITELNAVNE[k] || ""}`, kap: [k], gruppe: "KFL · Enkelte kapitler" });
+    });
+    // Andre fag: ét sæt pr. kapitel/blok som angivet i masteren (fx "KAP. 1-5"), plus "alle"
+    const andre = [...new Set(ORDBANK.map(o => o.fag).filter(f => f && f !== "KFL"))];
+    andre.forEach(fag => {
+      const ord = ORDBANK.filter(o => o.fag === fag), blokke = [...new Set(ord.map(o => o.kaptekst || ("KAP. " + o.kap)))];
+      if (blokke.length > 1) liste.push({ id: fag + "-alle", fag, navn: "Alle kapitler · blandet", kap: [...new Set(ord.map(o => o.kap))], gruppe: fag });
+      blokke.forEach(bt => {
+        const o = ord.filter(x => (x.kaptekst || ("KAP. " + x.kap)) === bt), omr = [...new Set(o.map(x => x.omr).filter(Boolean))].join(", ");
+        liste.push({ id: fag + "-" + bt.replace(/[^0-9A-Za-z-]/g, ""), fag, navn: `${bt.replace(/^KAP\.?\s*/i, "Kapitel ")} · ${omr}`, kap: [...new Set(o.map(x => x.kap))], kaptekst: bt, gruppe: fag });
+      });
     });
     return liste;
   }
   const SAET = saetListe();
-  const ordFor = saet => ORDBANK.filter(o => saet.kap.includes(o.kap)).map(o => ({ ...o, ord: normaliser(o.ord) })).filter(o => o.ord.length >= 2 && o.ord.length <= MAX_GRID);
+  const ordFor = saet => ORDBANK.filter(o => (o.fag || "KFL") === saet.fag && (saet.kaptekst ? (o.kaptekst || ("KAP. " + o.kap)) === saet.kaptekst : saet.kap.includes(o.kap))).map(o => ({ ...o, ord: normaliser(o.ord) })).filter(o => o.ord.length >= 2 && o.ord.length <= MAX_GRID);
 
   function normaliser(s) {
     return (s || "").toUpperCase().replace(/\s+|-/g, "").replace(/É/g, "E").replace(/Ä/g, "Æ").replace(/Ö/g, "Ø");
@@ -160,8 +171,10 @@
     clearInterval(tidInterval); tidStart = null; $("timer").textContent = "00:00";
     $("saet").value = saet.id;
     location.hash = `saet=${saet.id}&seed=${seed}`;
-    $("printSub").textContent = $("facitSub").textContent = `${saet.navn} · ${kryds ? kryds.ord.length : 0} ord · kryds nr. ${seed}`;
-    $("hjaelpSub").textContent = `${saet.navn} · ${kryds ? kryds.ord.length : 0} ord · kryds nr. ${seed} · med hjælpebogstaver`;
+    document.title = `${saet.fag} Kryds og tværs`; document.querySelector(".brand").textContent = `${saet.fag} Kryds og tværs`;
+    document.querySelectorAll(".printtitle").forEach((el, i) => { if (i < 2) el.textContent = `${saet.fag} Kryds og tværs`; });
+    $("printSub").textContent = $("facitSub").textContent = `${saet.fag} · ${saet.navn} · ${kryds ? kryds.ord.length : 0} ord · kryds nr. ${seed}`;
+    $("hjaelpSub").textContent = `${saet.fag} · ${saet.navn} · ${kryds ? kryds.ord.length : 0} ord · kryds nr. ${seed} · med hjælpebogstaver`;
     $("footSeed").textContent = `kryds nr. ${seed} – del linket, så får andre den samme kryds`;
     $("doneOverlay").hidden = true;
     $("feedback").textContent = ""; $("feedback").className = "feedback";
