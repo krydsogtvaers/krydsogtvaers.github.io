@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KFL Bingo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="bingo.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">KFL Bingo</div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tabElev" class="tab" aria-selected="true">Elev · mit kort</button>
+      <button type="button" role="tab" id="tabVaert" class="tab" aria-selected="false">Lærer · kald op</button>
+    </div>
+    <label class="setlabel" for="saet">Sæt</label>
+    <select id="saet" class="setselect" aria-label="Vælg bingosæt"></select>
+    <div class="spacer"></div>
+    <a class="btn btn-ghost" href="index.html">Kryds og tværs</a>
+  </header>
+
+  <!-- ===== ELEV ===== -->
+  <main id="elevView" class="wrap">
+    <section class="elevcol">
+      <div class="elevbar">
+        <div class="field">
+          <label for="kortNr">Kortnummer (1–36)</label>
+          <input id="kortNr" type="number" min="1" max="36" inputmode="numeric" value="1">
+        </div>
+        <button type="button" id="btnRandom" class="btn btn-outline">Tilfældigt kort</button>
+        <button type="button" id="btnReset" class="btn btn-outline">Nulstil</button>
+      </div>
+      <div class="kortinfo" id="kortInfo"></div>
+      <div id="elevGrid" class="bgrid" role="group" aria-label="Dit bingokort"></div>
+      <div class="banner" id="elevBanner" aria-live="polite"></div>
+      <p class="hint">Tryk på et felt, når du har hørt ledetråden til begrebet. Hele række, kolonne eller diagonal = <b>BINGO</b>. Sig dit kortnummer højt, så læreren kan tjekke det.</p>
+    </section>
+  </main>
+
+  <!-- ===== LÆRER ===== -->
+  <main id="vaertView" class="wrap vaert" hidden>
+    <section class="vaertmain">
+      <div class="vaertbar">
+        <div class="modes" role="radiogroup" aria-label="Spiltype">
+          <label><input type="radio" name="mode" value="linje" checked> Runde 1 · linje</label>
+          <label><input type="radio" name="mode" value="fuld"> Runde 2 · fuld plade</label>
+        </div>
+        <div class="spacer"></div>
+        <div class="count" id="count">Kald 0 af 80</div>
+      </div>
+
+      <div class="bigcard" id="bigCard">
+        <div class="biglabel" id="bigLabel">Klar</div>
+        <p class="bigclue" id="bigClue">Tryk <b>Næste ledetråd</b> for at starte. Læs ledetråden højt – eleverne finder begrebet på deres kort.</p>
+        <div class="answer" id="answer" hidden></div>
+      </div>
+
+      <div class="btnrow">
+        <button type="button" id="btnNext" class="btn btn-primary big">Næste ledetråd</button>
+        <button type="button" id="btnReveal" class="btn btn-outline big" disabled>Vis svar</button>
+        <button type="button" id="btnUndo" class="btn btn-outline" disabled>Fortryd</button>
+        <button type="button" id="btnNew" class="btn btn-outline">Nyt spil</button>
+      </div>
+      <p class="small">Genvejstaster: mellemrum eller → = næste ledetråd · V = vis/skjul svar · ← = fortryd</p>
+    </section>
+
+    <aside class="vaertside">
+      <div class="card">
+        <div class="cardlabel">Tjek bingo</div>
+        <form id="checkForm" class="checkrow" autocomplete="off">
+          <label for="checkNr" class="sr">Kortnummer</label>
+          <input id="checkNr" type="number" min="1" max="36" inputmode="numeric" placeholder="Kortnr.">
+          <button type="submit" class="btn btn-primary">Tjek</button>
+        </form>
+        <div id="checkResult" class="checkresult" aria-live="polite"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardlabel">Uafgjort?</div>
+        <p class="small">Kald en ekstra ledetråd, som ikke tæller som kaldt. Første rigtige svar vinder.</p>
+        <button type="button" id="btnTie" class="btn btn-outline">Tiebreaker</button>
+        <div id="tieBox" class="tiebox" hidden></div>
+      </div>
+
+      <details class="card calledbox">
+        <summary>Kaldte begreber <span class="small">(kun lærer – skjul før du deler skærm)</span></summary>
+        <div id="calledList" class="chips"></div>
+      </details>
+    </aside>
+  </main>
+
+  <footer class="foot">KFL Bingo · 10 sæt à 36 kort · hvert sæt har 80 begreber fra alle kapitler · samme kortnummer giver altid samme kort</footer>
+</div>
+
+<script src="data.js"></script>
+<script src="bingo-core.js"></script>
+<script src="bingo.js"></script>
+</body>
+</html>
